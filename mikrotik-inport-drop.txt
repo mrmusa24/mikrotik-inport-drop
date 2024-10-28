@@ -1,0 +1,79 @@
+ ip firewall address-list
+
+add list=WL
+
+add address=80.66.66.0/23 list=WL
+
+add address=89.248.168.0/21 list=WL
+
+add address=185.64.96.0/20 list=WL
+
+add address=185.25.48.0/20 list=WL
+
+add address=85.206.160.0/19 list=WL
+
+add address=163.172.0.0/17 list=WL
+
+add address=80.82.64.0/20 list=WL
+
+add address=10.0.0.0/8 list=WL
+
+add address=127.0.0.0/8 list=WL
+
+add address=192.168.0.0/16 list=WL
+
+add address=172.16.0.0/12 list=WL
+
+add address=169.254.0.0/16 list=WL
+
+add list=LOCALS
+
+add address=10.0.0.0/8 list=LOCALS
+
+add address=127.0.0.0/8 list=LOCALS
+
+add address=192.168.0.0/16 list=LOCALS
+
+add address=172.16.0.0/12 list=LOCALS
+
+add address=169.254.0.0/16 list=LOCALS
+
+/ip firewall filter
+
+add action=accept chain=input disabled=yes dst-port=\
+
+    12024,8729,21,23,8291,80,443,22,51922,51923,1701,1723,1194,500,4500 \
+
+    protocol=tcp src-address-list=LOCALS
+
+add action=drop chain=input disabled=yes dst-port=\
+
+    12024,8729,21,23,8291,80,443,1701,1723,1194,500,4500 protocol=tcp \
+
+    src-address-list=!LOCALS
+
+add action=accept chain=input disabled=yes dst-port=1701,1723,1194,500,4500 \
+
+    protocol=udp src-address-list=LOCALS
+
+add action=drop chain=input disabled=yes dst-port=1701,1723,1194,500,4500 \
+
+    protocol=udp src-address-list=!LOCALS
+
+add action=accept chain=input disabled=yes protocol=ipsec-esp src-address-list=\
+
+    LOCALS
+
+add action=drop chain=input disabled=yes protocol=ipsec-esp src-address-list=\
+
+    !LOCALS
+
+add action=accept chain=input disabled=yes dst-port=51922,51923,22 protocol=tcp \
+
+    src-address-list=WL
+
+add action=accept chain=input disabled=yes dst-port=51922 protocol=tcp
+
+add action=drop chain=input disabled=yes dst-port=51923,22 protocol=tcp \
+
+    src-address-list=!WL
